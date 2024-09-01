@@ -1,0 +1,137 @@
+public class BattleshipGame
+{
+    public string[,] fourbyfourgrid = {
+        { "a1", "a2", "a3", "a4" },
+        { "b1", "b2", "b3", "b4" },
+        { "c1", "c2", "c3", "c4" },
+        { "d1", "d2", "d3", "d4" }
+    };
+
+    public static (string, string) randomchoices()
+    {
+        BattleshipGame game = new BattleshipGame();
+        Random rand = new Random();
+
+        // Step 1: Randomly select the first label
+        int row1 = rand.Next(0, 4);
+        int col1 = rand.Next(0, 4);
+        string firstLabel = game.fourbyfourgrid[row1, col1];
+
+        // Step 2: Define possible directions for the second label
+        (int rowOffset, int colOffset)[] directions = new (int, int)[]
+        {
+            (-1, 0), // Up
+            (1, 0),  // Down
+            (0, -1), // Left
+            (0, 1)   // Right
+        };
+
+        // Step 3: Filter directions to ensure they remain within the grid boundaries
+        var validDirections = new System.Collections.Generic.List<(int rowOffset, int colOffset)>();
+        foreach (var direction in directions)
+        {
+            int newRow = row1 + direction.rowOffset;
+            int newCol = col1 + direction.colOffset;
+            if (newRow >= 0 && newRow < 4 && newCol >= 0 && newCol < 4)
+            {
+                validDirections.Add(direction);
+            }
+        }
+
+        // Step 4: Randomly select a valid direction
+        var chosenDirection = validDirections[rand.Next(validDirections.Count)];
+
+        // Step 5: Calculate the position of the second label
+        int row2 = row1 + chosenDirection.rowOffset;
+        int col2 = col1 + chosenDirection.colOffset;
+        string secondLabel = game.fourbyfourgrid[row2, col2];
+
+        return (firstLabel, secondLabel);
+    }
+
+    public static void Main()
+    {
+        bool playAgain = true;
+        string board = "\na1, a2, a3, a4, \nb1, b2, b3, b4, \nc1, c2, c3, c4, \nd1, d2, d3, d4";
+        int counter = 6;
+        List<string> guesses = new List<string>();
+
+        (string firstLabel, string secondLabel) = randomchoices();
+
+        Console.WriteLine("Welcome to battleship! Would you like to read the rules? (Y/N)");
+        char y = char.Parse(Console.ReadLine());
+        if (y == 'Y' || y == 'y')
+        {
+            Console.WriteLine("Select a grid position to sink the enemy battleship. You have 6 shots total and the battleship has 2 health. \nThe battleship will not be placed diagonally. If a shot hits, then an X will be placed in that position on the game \nboard. Otherwise, an O will be placed.");
+        }
+
+        while (playAgain)
+        {
+            while (!(guesses.Contains(firstLabel) && guesses.Contains(secondLabel)) && counter > 0)
+            {
+                Console.WriteLine(board);
+                Console.WriteLine("Select a square: ");
+                string str = Console.ReadLine();
+                string str1 = str.ToLower();
+
+                if (!(board.Contains(str1)) || str1.Length != 2)
+                {
+                    Console.WriteLine("\nPlease enter a valid square label");
+                }
+                else if (str1 == firstLabel || str1 == secondLabel)
+                {
+                    Console.WriteLine("Hit!");
+                    board = board.Replace(str1, "X");
+                    guesses.Add(str1);
+                    counter--;
+                }
+                else
+                {
+                    Console.WriteLine("Miss!");
+                    board = board.Replace(str1, "O");
+                    guesses.Add(str1);
+                    counter--; 
+                }
+
+                Console.WriteLine($"Shots remaining: {counter}");
+            }
+
+            if (guesses.Contains(firstLabel) && guesses.Contains(secondLabel))
+            {
+                Console.WriteLine("You win! Would you like to play again (Y/N)? ");
+                char answer = char.Parse(Console.ReadLine());
+                if (answer == 'Y' || answer == 'y')
+                {
+                    ResetGame(ref board, ref counter, guesses, out firstLabel, out secondLabel);
+                }
+                else if (answer == 'Y' || answer == 'y')
+                {
+                    playAgain = false;
+                    Console.WriteLine("Thanks for playing!");
+                }
+            }
+            else if (counter == 0)
+            {
+                Console.WriteLine("You lose! Would you like to play again (Y/N)? ");
+                char x = char.Parse(Console.ReadLine());
+                if (x == 'Y' || x == 'y')
+                {
+                    ResetGame(ref board, ref counter, guesses, out firstLabel, out secondLabel);
+                }
+                else if (x == 'N' || x == 'n')
+                {
+                    playAgain = false;
+                    Console.WriteLine("Thanks for playing!");
+                }
+            }
+        }
+    }
+
+    private static void ResetGame(ref string board, ref int counter, List<string> guesses, out string firstLabel, out string secondLabel)
+    {
+        (firstLabel, secondLabel) = randomchoices();
+        board = "\na1, a2, a3, a4, \nb1, b2, b3, b4, \nc1, c2, c3, c4, \nd1, d2, d3, d4";
+        counter = 6;
+        guesses.Clear();
+    }
+}
