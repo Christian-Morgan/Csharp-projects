@@ -62,7 +62,7 @@ public class BattleshipGame
         char y = char.Parse(Console.ReadLine());
         if (y == 'Y' || y == 'y')
         {
-            Console.WriteLine("Select a grid position to sink the enemy battleship. You have 6 shots total and the battleship has 2 health. \nThe battleship will not be placed diagonally. If a shot hits, then an X will be placed in that position on the game \nboard. Otherwise, an O will be placed.");
+            Console.WriteLine("Select a grid position to sink the enemy battleship. You have 6 shots total and the battleship is two spaces long. \nThe battleship will not be placed diagonally. If a shot hits, then an X will be placed in that position on the game \nboard. Otherwise, an O will be placed.");
         }
 
         while (playAgain)
